@@ -60,6 +60,11 @@ module Shared
       assert !new.first?
       assert new.last?
 
+      new = ArrayScopeListMixin.act_as_list_no_update do
+        ArrayScopeListMixin.create(parent_id: 20, parent_type: 'ParentClass')
+      end
+      assert_equal @default_pos, new.pos
+
       new = ArrayScopeListMixin.create(parent_id: 20, parent_type: 'ParentClass')
       assert_equal 3, new.pos
       assert !new.first?
@@ -78,6 +83,11 @@ module Shared
       new = ArrayScopeListMixin.create(parent_id: 20, parent_type: 'ParentClass')
       assert_equal 2, new.pos
 
+      new = ArrayScopeListMixin.act_as_list_no_update do
+        ArrayScopeListMixin.create(parent_id: 20, parent_type: 'ParentClass')
+      end
+      assert_equal @default_pos, new.pos
+
       new = ArrayScopeListMixin.create(parent_id: 20, parent_type: 'ParentClass')
       assert_equal 3, new.pos
 
@@ -95,6 +105,11 @@ module Shared
 
       new4.reload
       assert_equal 4, new4.pos
+
+      new = ArrayScopeListMixin.act_as_list_no_update do
+        ArrayScopeListMixin.create(parent_id: 20, parent_type: 'ParentClass')
+      end
+      assert_equal @default_pos, new.pos
 
       new5 = ArrayScopeListMixin.create(parent_id: 20, parent_type: 'ParentClass')
       assert_equal 5, new5.pos

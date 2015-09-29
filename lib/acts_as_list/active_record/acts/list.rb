@@ -328,6 +328,8 @@ module ActiveRecord
           # has been set manually using position=, not necessarily the top or bottom of the list:
 
           def add_to_list_top
+            return if act_as_list_callbacks_disabled?
+
             if not_in_list? || internal_scope_changed? && !position_changed || default_position?
               increment_positions_on_all_items
               self[position_column] = acts_as_list_top
@@ -343,6 +345,8 @@ module ActiveRecord
           end
 
           def add_to_list_bottom
+            return if act_as_list_callbacks_disabled?
+
             if not_in_list? || internal_scope_changed? && !position_changed || default_position?
               self[position_column] = bottom_position_in_list.to_i + 1
             else
@@ -393,7 +397,8 @@ module ActiveRecord
 
           # This has the effect of moving all the lower items up one.
           def decrement_positions_on_lower_items(position=nil)
-            return unless in_list?
+            return if act_as_list_callbacks_disabled? || not_in_list?
+
             position ||= send(position_column).to_i
             acts_as_list_list.where("#{quoted_position_column_with_table_name} > ?", position).decrement_all
           end
@@ -468,6 +473,8 @@ module ActiveRecord
           end
 
           def update_positions
+            return if act_as_list_callbacks_disabled?
+
             old_position = send("#{position_column}_was").to_i
             new_position = send(position_column).to_i
 
@@ -488,6 +495,8 @@ module ActiveRecord
           end
 
           def check_scope
+            return if act_as_list_callbacks_disabled?
+
             if internal_scope_changed?
               cached_changes = changes
 
@@ -502,6 +511,8 @@ module ActiveRecord
           # This check is skipped if the position is currently the default position from the table
           # as modifying the default position on creation is handled elsewhere
           def check_top_position
+            return if act_as_list_callbacks_disabled?
+
             if send(position_column) && !default_position? && send(position_column) < acts_as_list_top
               self[position_column] = acts_as_list_top
             end
